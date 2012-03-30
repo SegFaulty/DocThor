@@ -4,7 +4,9 @@
 is a php-script which generates php-source code-stubs for given extensions or class names
 
 we use it at [Schottenland.de](http://www.schottenland.de) to generate simple API-Files for all installed extensions
-to avoid *"unknown class" or "unknown method"* errors in the IDE (e.g. [PhpStorm](http://www.jetbrains.com/phpstorm/))
+to avoid *"undefined class" or "undefined method"* errors in the IDE (e.g. [PhpStorm](http://www.jetbrains.com/phpstorm/))
+
+![undefined](https://raw.github.com/SegFaulty/DocThor/master/undefined.png)
 
 ##Usage##
 * with one parameter it will check if it is a loaded extension, if not it considers it a class name `php DocThor.php APC`
