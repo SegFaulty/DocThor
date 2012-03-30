@@ -1,18 +1,20 @@
 #DocThor#
 
 
-is a php-script wich egnerates php-sourcecode-stubs for given extension or classnames
+is a php-script which generates php-source code-stubs for given extensions or class names
 
-we use it at [Schottenland.de](http://www.schottenland.de) to generate simple ApiFiles for all installed extension
-to avoid *"unknown Class" or "unknown Method"* errors in the IDE (e.g. [PhpStorm](http://www.jetbrains.com/phpstorm/))
+we use it at [Schottenland.de](http://www.schottenland.de) to generate simple API-Files for all installed extensions
+to avoid *"unknown class" or "unknown method"* errors in the IDE (e.g. [PhpStorm](http://www.jetbrains.com/phpstorm/))
 
 ##Usage##
-* with one parameter it will check if this is a loaded extension, if not it take it as a classname `php DocThor.php APC`
-* with more then one parameter, all are taken as class names  `php DocThor.php Directory DirectoryIterator`
+* with one parameter it will check if it is a loaded extension, if not it considers it a class name `php DocThor.php APC`
+* with more than one parameter, all are considered class names `php DocThor.php Directory DirectoryIterator`
 
+##How it works##
+* uses reflections to determine classes, methods, constants, functions, etc. and "rebuilds" these as empty structures
 
 ##Example##
-will generate php-sourcecode for the [ZMQ-Extension](http://www.zeromq.org) (if installed) by Reflection
+will generate php-source code for the [ZMQ-Extension](http://www.zeromq.org) (if installed)
 
 * download DocThor.php
 * run `php DocThor.php ZMQ > zmqApi.php`
