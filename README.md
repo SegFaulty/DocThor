@@ -19,7 +19,7 @@ simple test script included in test directory, run with `php DocThorTest.php`
 ##Example##
 will generate php-source code for the [ZMQ-Extension](http://www.zeromq.org) (if installed)
 
-* download DocThor.php
+* download `wget https://raw.github.com/SegFaulty/DocThor/master/DocThor.php`
 * run `php DocThor.php ZMQ > zmqApi.php`
 * put zmqApi.php in your IDE-project-path
  
