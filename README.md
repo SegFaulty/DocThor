@@ -28,7 +28,7 @@ will generate php-source code for the [ZMQ-Extension](http://www.zeromq.org) (if
 zmqApi.php looks like:
 
     <?php
-    // ZMQ-API v1.0.3 Docs build by DocThor [2012-03-30]
+    // zmq-API v1.0.3 Docs build by DocThor [2012-03-30]
     class ZMQ {
             const SOCKET_PAIR = 0;
             const SOCKET_PUB = 1;
