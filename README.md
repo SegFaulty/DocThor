@@ -13,6 +13,9 @@ to avoid *"unknown class" or "unknown method"* errors in the IDE (e.g. [PhpStorm
 ##How it works##
 * uses reflections to determine classes, methods, constants, functions, etc. and "rebuilds" these as empty structures
 
+##Test##
+simple test script included in test directory, run with `php DocThorTest.php` 
+
 ##Example##
 will generate php-source code for the [ZMQ-Extension](http://www.zeromq.org) (if installed)
 

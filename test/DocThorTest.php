@@ -16,23 +16,26 @@
 	$eol = $matches[1];
 	$expected = str_replace($eol, PHP_EOL, $expected);
 	$expected = preg_replace('~^<\?php.*?//detected EOL\s*~s','',$expected); // start entfernen
+	docthor_equals($expected, $result, 'ClassTest');
 
-	// check if its the same like generated
-#echo 'exp:'.$expected.':::'."\n";
-#echo 'res:'.$result.':::'."\n";
-#echo 'exp:'.Waps_Helper_String::getStringRepresentationOfBinary($expected).':::'."\n";
-#echo 'res:'.Waps_Helper_String::getStringRepresentationOfBinary($result).':::'."\n";
-	if( $expected===$result ){
-		echo 'Test passed'.PHP_EOL;
+	$expected = file_get_contents(dirname(__FILE__).'/TestExtSoap.php');
+	$expected = str_replace($eol, PHP_EOL, $expected);
+	$result = '<?php'.PHP_EOL.$docThor->buildExtension('soap');
+	docthor_equals($expected, $result, 'ExtensionTest');
+
+
+function docthor_equals($expected, $subject, $name) {
+	if( $expected===$subject ){
+		echo 'Test '.$name.' passed'.PHP_EOL;
 	} else {
-		echo 'Test failed'.PHP_EOL;
-		$len = max(strlen($result), strlen($expected));
+		echo 'Test '.$name.' failed'.PHP_EOL;
+		$len = max(strlen($subject), strlen($expected));
 		for($i=0; $i<$len; $i++){
-			if( $result[$i]!=$expected[$i] ){
+			if( $subject[$i]!=$expected[$i] ){
 				echo 'expected:'.substr($expected,$i,100).'...'.PHP_EOL;
-				echo 'but  was:'.substr($result,$i,100).'...'.PHP_EOL;
+				echo 'but  was:'.substr($subject,$i,100).'...'.PHP_EOL;
 				break;
 			}
 		}
 	}
-
+}

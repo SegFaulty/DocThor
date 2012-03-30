@@ -41,30 +41,7 @@ class DocThor {
 					}else{
 						$result.= 'protected ';
 					}
-					$result.= 'function '.$method->getName().'(';
-
-					// check parameters
-					$trenn = '';
-				    foreach($method->getParameters() as $param) {
-						$result.= $trenn;
-					    $class = $param->getClass();
-					    if( !empty($class) ){
-						    $result.= $class->getName().' ';
-					    }
-				        if($param->isPassedByReference()) {
-				            $result.= '&';
-				        }
-					    $result.= '$'.$param->getName();
-				        if($param->isOptional()) {
-				            if($param->isDefaultValueAvailable()) {
-					            $result.= '='.var_export($param->getDefaultValue(), true);
-				            }else{
-				                $result.= '=""';
-                            }
-				        }
-					    $trenn = ', ';
-				    }
-					$result.= ') {}'.PHP_EOL;
+					$result.= $this->buildFunction($method);
 				}
 			}
 
@@ -76,6 +53,47 @@ class DocThor {
 	}
 
 	/**
+	 * @param ReflectionFunction $function
+	 * @return string
+	 */
+	public function buildFunction($function){
+		$result = 'function '.$function->getName().'(';
+
+		$result.= $this->buildParameters($function->getParameters());
+		$result.= ') {}'.PHP_EOL;
+		return $result;
+	}
+
+	/**
+	 * @param $parameters
+	 * @return string
+	 */
+	protected function buildParameters($parameters){
+		$result = '';
+		// check parameters
+		$trenn = '';
+		foreach( $parameters as $param) {
+			$result.= $trenn;
+		    $class = $param->getClass();
+		    if( !empty($class) ){
+			    $result.= $class->getName().' ';
+		    }
+	        if($param->isPassedByReference()) {
+	            $result.= '&';
+	        }
+		    $result.= '$'.$param->getName();
+	        if($param->isOptional()) {
+	            if($param->isDefaultValueAvailable()) {
+		            $result.= '='.var_export($param->getDefaultValue(), true);
+	            }else{
+	                $result.= '=""';
+                }
+	        }
+		    $trenn = ', ';
+	    }
+		return $result;
+	}
+	/**
 	 * build an entire extension
 	 * @param $extensionName
 	 * @return string
@@ -84,10 +102,14 @@ class DocThor {
 		$result = '';
 		if( extension_loaded($extensionName) ){
 			$refExtension = new ReflectionExtension($extensionName);
-			$result.= '// '.$extensionName.'-API v'.$refExtension->getVersion().' Docs build by DocThor ['.date('Y-m-d').']'."\n";
+			$result.= '// '.$refExtension->getName().'-API v'.$refExtension->getVersion().' Docs build by DocThor ['.date('Y-m-d').']'."\n";
 			// constants
 			foreach( $refExtension->getConstants() as $name=>$value ){
-				$result.= "\t".'const '.$name.' = '.var_export($value, true).';'.PHP_EOL;
+				$result.= 'const '.$name.' = '.var_export($value, true).';'.PHP_EOL;
+			}
+			// functions
+			foreach( $refExtension->getFunctions() as $function ){
+				$result.= $this->buildFunction($function);
 			}
 			// classes
 			foreach( $refExtension->getClassNames() as $className ){
@@ -100,7 +122,7 @@ class DocThor {
 	}
 }
 
-if( isset($argv) AND count($argv)>1 ){
+if( isset($argv) AND count($argv)>1 and $argv[0]==preg_replace('~.*/~','',__FILE__ ) ){
 	array_shift($argv);
 	echo '<?php'.PHP_EOL;
 	$docThor = new DocThor();

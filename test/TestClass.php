@@ -12,7 +12,7 @@ class Test_DocThor_TestClass {
 	public function get($name) {}
 	public function getDefault($name, $default='string') {}
 	public function getEmpty($name, $default='') {}
-	public function defaultZero($def=0) {}#
+	public function defaultZero($def=0) {}
 	public function defaultNull($def=NULL) {}
 	public function defaultEmptyArray($array=array (
 )) {}
