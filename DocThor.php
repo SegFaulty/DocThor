@@ -121,7 +121,7 @@ class DocThor {
 		return $result;
 	}
 }
-
+print_r(get_declared_classes());
 if( isset($argv) AND count($argv)>1 and $argv[0]==preg_replace('~.*/~','',__FILE__ ) ){
 	array_shift($argv);
 	echo '<?php'.PHP_EOL;

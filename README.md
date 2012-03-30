@@ -10,7 +10,7 @@ to avoid *"undefined class" or "undefined method"* errors in the IDE (e.g. [PhpS
 
 ##Usage##
 * with one parameter it will check if it is a loaded extension, if not it considers it a class name `php DocThor.php APC`
-* with more than one parameter, all are considered class names `php DocThor.php Directory DirectoryIterator`
+* with more than one parameter, all are considered class names `php DocThor.php Directory Exception`
 
 ##How it works##
 * uses reflections to determine classes, methods, constants, functions, etc. and "rebuilds" these as empty structures
@@ -90,107 +90,6 @@ zmqApi.php looks like:
     class ZMQSocket {
             public function __construct(ZMQContext $ZMQContext, $type, $persistent_id="", $on_new_socket="") {}
             public function send($message, $mode="") {}
-            public function recv($mode="") {}
-            public function sendmulti($message, $mode="") {}
-            public function recvmulti($mode="") {}
-            public function bind($dsn, $force="") {}
-            public function connect($dsn, $force="") {}
-            public function setsockopt($key, $value) {}
-            public function getendpoints() {}
-            public function getsockettype() {}
-            public function ispersistent() {}
-            public function getpersistentid() {}
-            public function getsockopt($key) {}
-            public function sendmsg($message, $mode="") {}
-            public function recvmsg($mode="") {}
-    }
-    class ZMQPoll {
-            public function add($entry, $type) {}
-            public function poll(&$readable, &$writable, $timeout="") {}
-            public function getlasterrors() {}
-            public function remove($remove) {}
-            public function count() {}
-            public function clear() {}
-    }
-    class ZMQDevice {
-            public function __construct($frontend, $backend) {}
-            public function run() {}
-            public function setidlecallback($idle_callback) {}
-            public function setidletimeout($timeout) {}
-    }
-    class ZMQException {
-            protected $message;
-            protected $code;
-            protected $file;
-            protected $line;
-            public function __construct($message="", $code="", $previous="") {}
-            public function getMessage() {}
-            public function getCode() {}
-            public function getFile() {}
-            public function getLine() {}
-            public function getTrace() {}
-            public function getPrevious() {}
-            public function getTraceAsString() {}
-            public function __toString() {}
-    }
-    class ZMQContextException {
-            protected $message;
-            protected $code;
-            protected $file;
-            protected $line;
-            public function __construct($message="", $code="", $previous="") {}
-            public function getMessage() {}
-            public function getCode() {}
-            public function getFile() {}
-            public function getLine() {}
-            public function getTrace() {}
-            public function getPrevious() {}
-            public function getTraceAsString() {}
-            public function __toString() {}
-    }
-    class ZMQSocketException {
-            protected $message;
-            protected $code;
-            protected $file;
-            protected $line;
-            public function __construct($message="", $code="", $previous="") {}
-            public function getMessage() {}
-            public function getCode() {}
-            public function getFile() {}
-            public function getLine() {}
-            public function getTrace() {}
-            public function getPrevious() {}
-            public function getTraceAsString() {}
-            public function __toString() {}
-    }
-    class ZMQPollException {
-            protected $message;
-            protected $code;
-            protected $file;
-            protected $line;
-            public function __construct($message="", $code="", $previous="") {}
-            public function getMessage() {}
-            public function getCode() {}
-            public function getFile() {}
-            public function getLine() {}
-            public function getTrace() {}
-            public function getPrevious() {}
-            public function getTraceAsString() {}
-            public function __toString() {}
-    }
-    class ZMQDeviceException {
-            protected $message;
-            protected $code;
-            protected $file;
-            protected $line;
-            public function __construct($message="", $code="", $previous="") {}
-            public function getMessage() {}
-            public function getCode() {}
-            public function getFile() {}
-            public function getLine() {}
-            public function getTrace() {}
-            public function getPrevious() {}
-            public function getTraceAsString() {}
-            public function __toString() {}
-    }
+            ...
 
+see all in the Wiki at [zmq-Api PHP-file](https://github.com/SegFaulty/DocThor/wiki/zmq)
