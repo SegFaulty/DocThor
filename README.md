@@ -12,6 +12,7 @@ to avoid *"undefined class" or "undefined method"* errors in the IDE (e.g. [PhpS
 * with one parameter it will check if it is a loaded extension, if not it considers it a class name `php DocThor.php APC`
 * with more than one parameter, all are considered class names `php DocThor.php Directory Exception`
 * with --sourceDir parameter, it scans .c files for more information `php DocThor.php --sourceDir=/opt/src/zeromq/ zmq`
+* with --check parameter, no structure is generated, only the inconsistencies betwenn source and reflection are shown `php DocThor.php --sourceDir=/opt/src/zeromq/ --check zmq`
 
 ##With C source files##
 some hints if you use the --sourceDir parameter
@@ -21,7 +22,7 @@ some hints if you use the --sourceDir parameter
 * some **extensions do not include** the (for the compiling optional but for the DocThor) required information
 * if your are lucky and the DocThor extracts more information, then you have a big chance they are not consistent with the "reflected" structure (because the developer has to update the internal doc comments on code change .. and you know ..)
 * so **trust the structure** but **don't trust the docBlocks**
-* use a tool like PhpStorm that marks the inconsistencies and fix manually
+* use a tool like PhpStorm that marks the inconsistencies and fix manually (use --check to preview)
 
 ##How it works##
 * primary: uses reflections to determine classes, methods, constants, functions, etc. and "rebuilds" these as empty structures
@@ -40,6 +41,7 @@ will generate php-source code for the [ZMQ-Extension](http://www.zeromq.org) (if
 * `tar -xzf php-zmq.tar.gz` and untar
 * `php DocThor.php --sourceDir=./ zmq > zmqApi.php` ask the DocThor and get the prescription
 * put zmqApi.php in your IDE-project path (and correct the inconsistencies)
+* `php DocThor.php --sourceDir=./ --check zmq` outputs only the differences between source code and reflection
  
 zmqApi.php looks like:
 
@@ -93,3 +95,15 @@ zmqApi.php looks like:
             ...
 
 see all in the Wiki at [zmq-Api PHP-file](https://github.com/SegFaulty/DocThor/wiki/zmq)
+
+check result:
+
+    8 inconsistencies found
+    inconsistent parameter name: ZMQContext::__construct reflection:persistent sourceCode:is_persistent
+    inconsistent parameter name: ZMQSocket::__construct reflection:ZMQContext sourceCode:context
+    inconsistent parameter name: ZMQSocket::send reflection:mode sourceCode:flags
+    inconsistent parameter name: ZMQSocket::sendmulti reflection:message sourceCode:messages
+    inconsistent parameter name: ZMQSocket::sendmulti reflection:mode sourceCode:flags
+    inconsistent parameter name: ZMQPoll::add reflection:entry sourceCode:object
+    inconsistent parameter name: ZMQPoll::add reflection:type sourceCode:events
+    inconsistent parameter name: ZMQPoll::remove reflection:remove sourceCode:item

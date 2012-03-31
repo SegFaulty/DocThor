@@ -14,7 +14,11 @@ class DocThor {
 	 * @var array
 	 */
 	protected $sourceEntries = array();
-
+	/**
+	 * detected inconsistencies between reflection and source code
+	 * @var array
+	 */
+	protected $sourceInconsistencies = array();
 	/**
 	 * parses commandline
 	 * @param $argv
@@ -22,7 +26,7 @@ class DocThor {
 	public function runFromCli($argv){
 		if( isset($argv) AND count($argv)>1 ){
 			// getOptions
-			$this->options = getopt('',array('sourceDir:'));
+			$this->options = getopt('',array('sourceDir:', 'check'));
 			if( !empty($this->options['sourceDir']) ){
 				if( !is_dir($this->options['sourceDir']) ){
 					die('sourceDir: '.$this->options['sourceDir'].' not found!');
@@ -32,7 +36,6 @@ class DocThor {
 # print_r($this->sourceEntries);
 			}
 
-
 			array_shift($argv);
 			$subjects = array();
 			foreach( $argv as $options ){
@@ -40,16 +43,23 @@ class DocThor {
 					$subjects[] = $options;
 				}
 			}
-			echo '<?php'.PHP_EOL;
+			$result = '<?php'.PHP_EOL;
 			if( count($subjects)==1 AND extension_loaded($subjects[0]) ){
-				echo $this->buildExtension($subjects[0]);
+				$result.= $this->buildExtension($subjects[0]);
 			}else{
 				foreach( $subjects as $className ){
 					if( substr($className,0,2)!='--' ){
-						echo $this->buildClass($className);
+						$result.= $this->buildClass($className);
 					}
 				}
 			}
+			if( array_key_exists('check', $this->options) ){
+				echo count($this->sourceInconsistencies).' inconsistencies found'."\n";
+				echo join("\n", $this->sourceInconsistencies)."\n";
+			} else {
+				echo $result;
+			}
+
 		}else{
 			$file = preg_replace('~.*/~','',__FILE__ );
 			echo 'Usage: php '.$file."\n";
@@ -101,6 +111,8 @@ class DocThor {
 				}
 				if( $method->isPublic() OR $method->isProtected() ){
 
+					$refParameters = $method->getParameters();
+
 					// process sourceInformations
 					if( isset($this->sourceEntries['classes'][$className]['methods'][$method->getName()])){
 						$entry = $this->sourceEntries['classes'][$className]['methods'][$method->getName()];
@@ -110,7 +122,18 @@ class DocThor {
 							$docLines[] = '';
 						}
 						if( !empty($entry['parameters']) ){
+							if( count($refParameters)!=count($entry['parameters']))  {
+								$this->sourceInconsistencies[] = 'inconsistent parameter count: '.$refClass->getName().'::'.$method->getName().' reflection:'.count($refParameters).' sourceCode:'.count($entry['parameters']);
+							}
+							$refParamIndex = 0;
 							foreach($entry['parameters'] as $parameterName=>$pEntry){
+								$refParameter = $refParameters[$refParamIndex++];
+								if( $refParameter->getName() != $parameterName)  {
+									$this->sourceInconsistencies[] = 'inconsistent parameter name: '.$refClass->getName().'::'.$method->getName().' reflection:'.$refParameter->getName().' sourceCode:'.$parameterName;
+								}
+								if( $refParameter->getClass()!='' AND $refParameter->getClass()->getName() != $pEntry['type'])  {
+									$this->sourceInconsistencies[] = 'inconsistent parameter type: '.$refClass->getName().'::'.$method->getName().' reflection:'.$refParameter->getClass()->getName().' sourceCode:'.$pEntry['type'];
+								}
 								$docLines[] = '@param '.$pEntry['type'].' $'.$parameterName;
 							}
 						}
