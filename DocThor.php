@@ -1,6 +1,60 @@
 <?php
 
+require_once(dirname(__FILE__).'/Stethoscope.php');
+
 class DocThor {
+
+	/**
+	 * CLI - OPTIONS
+	 * @var array
+	 */
+	protected $options = array();
+	/**
+	 * informations extracted from sourceCode
+	 * @var array
+	 */
+	protected $sourceEntries = array();
+
+	/**
+	 * parses commandline
+	 * @param $argv
+	 */
+	public function runFromCli($argv){
+		if( isset($argv) AND count($argv)>1 ){
+			// getOptions
+			$this->options = getopt('',array('sourceDir:'));
+			if( !empty($this->options['sourceDir']) ){
+				if( !is_dir($this->options['sourceDir']) ){
+					die('sourceDir: '.$this->options['sourceDir'].' not found!');
+				}
+				$stethoscope = new Stethoscope();
+				$this->sourceEntries = $stethoscope->scanDir($this->options['sourceDir']);
+# print_r($this->sourceEntries);
+			}
+
+
+			array_shift($argv);
+			$subjects = array();
+			foreach( $argv as $options ){
+				if( substr($options,0,2)!='--' ){
+					$subjects[] = $options;
+				}
+			}
+			echo '<?php'.PHP_EOL;
+			if( count($subjects)==1 AND extension_loaded($subjects[0]) ){
+				echo $this->buildExtension($subjects[0]);
+			}else{
+				foreach( $subjects as $className ){
+					if( substr($className,0,2)!='--' ){
+						echo $this->buildClass($className);
+					}
+				}
+			}
+		}else{
+			$file = preg_replace('~.*/~','',__FILE__ );
+			echo 'Usage: php '.$file."\n";
+		}
+	}
 
 	/**
 	 * build class Api
@@ -11,7 +65,12 @@ class DocThor {
 		$result = '';
 		if( class_exists($className) ){
 			$refClass = new ReflectionClass($className);
-			$result = 'class '.$className.' {'.PHP_EOL;
+			$className = $refClass->getName();
+			$result.= 'class '.$className.' ';
+			if( $refClass->getParentClass() ){
+				$result.= 'extends '.$refClass->getParentClass()->getName().' ';
+			}
+			$result.= '{'.PHP_EOL;
 
 			// check for constants
 			foreach( $refClass->getConstants() as $name=>$value ){
@@ -20,6 +79,9 @@ class DocThor {
 
 			// check for public attributes
 			foreach( $refClass->getProperties() as $property ){
+				if( $property->getDeclaringClass()->getName()!=$refClass->getName() ){
+					continue; // complete inheritted
+				}
 				if( $property->isPublic() OR $property->isProtected() ){
 					$result.= "\t";
 					if( $property->isPublic() ){
@@ -34,7 +96,32 @@ class DocThor {
 			// check for methods
 			foreach( $refClass->getMethods() as $method ){
 				$method = $refClass->getMethod($method->getName());
+				if( $method->getDeclaringClass()->getName()!=$refClass->getName() ){
+					continue; // complete inheritted
+				}
 				if( $method->isPublic() OR $method->isProtected() ){
+
+					// process sourceInformations
+					if( isset($this->sourceEntries['classes'][$className]['methods'][$method->getName()])){
+						$entry = $this->sourceEntries['classes'][$className]['methods'][$method->getName()];
+						$docLines = array();
+						if( !empty($entry['comment']) ){
+							$docLines[] = $entry['comment'];
+							$docLines[] = '';
+						}
+						if( !empty($entry['parameters']) ){
+							foreach($entry['parameters'] as $parameterName=>$pEntry){
+								$docLines[] = '@param '.$pEntry['type'].' $'.$parameterName;
+							}
+						}
+						if( !empty($entry['returnType']) ){
+							$docLines[] = '@return '.$entry['returnType'];
+						}
+
+						$result.= $this->generateDocBlock("\t", $docLines);
+					}
+
+
 					$result.= "\t";
 					if( $method->isPublic() ){
 						$result.= 'public ';
@@ -49,6 +136,20 @@ class DocThor {
 		}else{
 			trigger_error('DocThor: class '.$className.' not found!',E_USER_ERROR);
 		}
+		return $result;
+	}
+
+	/**
+	 * @param string $indent
+	 * @param array $lines
+	 * @return string
+	 */
+	protected function generateDocBlock($indent, $lines){
+		$result = $indent.'/**'."\n";
+		foreach( $lines as $line ){
+			$result.= $indent.' * '.$line."\n";
+		}
+		$result.= $indent.' */'."\n";
 		return $result;
 	}
 
@@ -102,7 +203,10 @@ class DocThor {
 		$result = '';
 		if( extension_loaded($extensionName) ){
 			$refExtension = new ReflectionExtension($extensionName);
-			$result.= '// '.$refExtension->getName().'-API v'.$refExtension->getVersion().' Docs build by DocThor ['.date('Y-m-d').']'."\n";
+			$result.= '/**'."\n";
+			$result.= ' * '.$refExtension->getName().'-API v'.$refExtension->getVersion().' Docs build by DocThor ['.date('Y-m-d').']'."\n";
+			$result.= ' * @package '.$refExtension->getName()."\n".' */'."\n";
+			$result.= "\n";
 			// constants
 			foreach( $refExtension->getConstants() as $name=>$value ){
 				$result.= 'const '.$name.' = '.var_export($value, true).';'.PHP_EOL;
@@ -113,6 +217,7 @@ class DocThor {
 			}
 			// classes
 			foreach( $refExtension->getClassNames() as $className ){
+				$result.= '/**'."\n".' * @package '.$refExtension->getName()."\n".' */'."\n";
 				$result.= $this->buildClass($className);
 			}
 		}else{
@@ -121,16 +226,8 @@ class DocThor {
 		return $result;
 	}
 }
-print_r(get_declared_classes());
-if( isset($argv) AND count($argv)>1 and $argv[0]==preg_replace('~.*/~','',__FILE__ ) ){
-	array_shift($argv);
-	echo '<?php'.PHP_EOL;
+
+if( isset($argv) AND preg_replace('~.*/~','',$argv[0])==preg_replace('~.*/~','',__FILE__ ) ){
 	$docThor = new DocThor();
-	if( count($argv)==1 AND extension_loaded($argv[0]) ){
-		echo $docThor->buildExtension($argv[0]);
-	}else{
-		foreach( $argv as $className ){
-			echo $docThor->buildClass($className);
-		}
-	}
+	$docThor->runFromCli($argv);
 }

@@ -11,9 +11,20 @@ to avoid *"undefined class" or "undefined method"* errors in the IDE (e.g. [PhpS
 ##Usage##
 * with one parameter it will check if it is a loaded extension, if not it considers it a class name `php DocThor.php APC`
 * with more than one parameter, all are considered class names `php DocThor.php Directory Exception`
+* with --sourceDir parameter, it scans .c files for more information `php DocThor.php --sourceDir=/opt/src/zeromq/ zmq`
+
+##With C source files##
+some hints if you use the --sourceDir parameter
+* if you installed the extension from e.g. PECL (with out source) you should download the source code
+* the information is extracted from (optional) code-comments in the source files
+* some *extension does not include* the (for the compiling optional but for the DocThor) required information
+* if your are lucky and the Docthor extracts more information, then you have a big chance they are not consitent with the "reflected" Structure (because the developer has to update the internal doc comments on code change .. and you know ..)
+* **so trust the structure but don't trust the docBlocks**
+* use a tool like PhpStorm to mark the inconsitencies an fix manualy
 
 ##How it works##
-* uses reflections to determine classes, methods, constants, functions, etc. and "rebuilds" these as empty structures
+* primary: uses reflections to determine classes, methods, constants, functions, etc. and "rebuilds" these as empty structures
+* secondary: if you provide a (php-extension-c-files) sourceDirectory then the DocThor will use his stethoscop to extract more information from the source-files to enhance the structure-files with docBlocks
 
 ##Test##
 simple test script included in test directory, run with `php DocThorTest.php` 
@@ -21,75 +32,62 @@ simple test script included in test directory, run with `php DocThorTest.php`
 ##Example##
 will generate php-source code for the [ZMQ-Extension](http://www.zeromq.org) (if installed)
 
-* download `wget https://raw.github.com/SegFaulty/DocThor/master/DocThor.php`
-* run `php DocThor.php ZMQ > zmqApi.php`
-* put zmqApi.php in your IDE-project-path
+* `mkdir zmq && cd zmq' make an tmp dir
+* `wget https://raw.github.com/SegFaulty/DocThor/master/DocThor.php` download DocThor
+* `wget https://raw.github.com/SegFaulty/DocThor/master/Stethoscope.php` and his stethoscope
+* `wget https://github.com/mkoppanen/php-zmq/tarball/master -O php-zmq.tar.gz && tar -xzf php-zmq.tar.gz` download and untar ZMQ-Sources
+* `php DocThor.php --sourceDir=./ zmq > zmqApi.php` ask the DocThor
+* put zmqApi.php in your IDE-project-path (and correct the inconsistencies)
  
 zmqApi.php looks like:
 
     <?php
-    // zmq-API v1.0.3 Docs build by DocThor [2012-03-30]
+    /**
+     * zmq-API v1.0.3 Docs build by DocThor [2012-03-31]
+     * @package zmq
+     */
+
+    /**
+     * @package zmq
+     */
     class ZMQ {
             const SOCKET_PAIR = 0;
             const SOCKET_PUB = 1;
             const SOCKET_SUB = 2;
-            const SOCKET_XSUB = 10;
-            const SOCKET_XPUB = 9;
-            const SOCKET_REQ = 3;
-            const SOCKET_REP = 4;
-            const SOCKET_XREQ = 5;
-            const SOCKET_XREP = 6;
-            const SOCKET_PUSH = 8;
-            const SOCKET_PULL = 7;
-            const SOCKET_DEALER = 5;
-            const SOCKET_ROUTER = 6;
-            const SOCKET_UPSTREAM = 7;
-            const SOCKET_DOWNSTREAM = 8;
-            const POLL_IN = 1;
-            const POLL_OUT = 2;
-            const MODE_SNDMORE = 2;
-            const MODE_NOBLOCK = 1;
-            const MODE_DONTWAIT = 1;
-            const DEVICE_FORWARDER = 0;
-            const DEVICE_QUEUE = 0;
-            const DEVICE_STREAMER = 0;
-            const ERR_INTERNAL = -99;
-            const ERR_EAGAIN = 11;
-            const ERR_ENOTSUP = 95;
-            const ERR_EFSM = 156384763;
-            const ERR_ETERM = 156384765;
-            const LIBZMQ_VER = '3.1.0';
-            const SOCKOPT_HWM = 201;
-            const SOCKOPT_SNDHWM = 23;
-            const SOCKOPT_RCVHWM = 24;
-            const SOCKOPT_AFFINITY = 4;
-            const SOCKOPT_IDENTITY = 5;
-            const SOCKOPT_RATE = 8;
-            const SOCKOPT_RECOVERY_IVL = 9;
-            const SOCKOPT_SNDBUF = 11;
-            const SOCKOPT_RCVBUF = 12;
-            const SOCKOPT_LINGER = 17;
-            const SOCKOPT_RECONNECT_IVL = 18;
-            const SOCKOPT_RECONNECT_IVL_MAX = 21;
-            const SOCKOPT_BACKLOG = 19;
-            const SOCKOPT_MAXMSGSIZE = 22;
-            const SOCKOPT_SUBSCRIBE = 6;
-            const SOCKOPT_UNSUBSCRIBE = 7;
-            const SOCKOPT_TYPE = 16;
-            const SOCKOPT_RCVMORE = 13;
-            const SOCKOPT_FD = 14;
+            ...
             const SOCKOPT_EVENTS = 15;
             const SOCKOPT_SNDTIMEO = 28;
             const SOCKOPT_RCVTIMEO = 27;
     }
+    /**
+     * @package zmq
+     */
     class ZMQContext {
+            /**
+             * Build a new ZMQContext object
+             *
+             * @param integer $io_threads
+             * @param boolean $is_persistent
+             * @return ZMQContext
+             */
             public function __construct($io_threads="", $persistent="") {}
             public function getsocket($type, $dsn, $on_new_socket="") {}
             public function ispersistent() {}
     }
+    /**
+     * @package zmq
+     */
     class ZMQSocket {
+            /**
+             * Build a new ZMQSocket object
+             *
+             * @param ZMQContext $context
+             * @param integer $type
+             * @param string $persistent_id
+             * @param callback $on_new_socket
+             * @return ZMQSocket
+             */
             public function __construct(ZMQContext $ZMQContext, $type, $persistent_id="", $on_new_socket="") {}
-            public function send($message, $mode="") {}
             ...
 
 see all in the Wiki at [zmq-Api PHP-file](https://github.com/SegFaulty/DocThor/wiki/zmq)

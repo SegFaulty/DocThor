@@ -1,5 +1,9 @@
 <?php
-// soap-API v Docs build by DocThor [2012-03-31]
+/**
+ * soap-API v Docs build by DocThor [2012-03-31]
+ * @package soap
+ */
+
 const SOAP_1_1 = 1;
 const SOAP_1_2 = 2;
 const SOAP_PERSISTENCE_SESSION = 1;
@@ -79,6 +83,9 @@ const WSDL_CACHE_MEMORY = 2;
 const WSDL_CACHE_BOTH = 3;
 function use_soap_error_handler($handler="") {}
 function is_soap_fault($object) {}
+/**
+ * @package soap
+ */
 class SoapClient {
 	public function SoapClient($wsdl, $options="") {}
 	public function __call($function_name, $arguments) {}
@@ -94,9 +101,15 @@ class SoapClient {
 	public function __setLocation($new_location="") {}
 	public function __setSoapHeaders($soapheaders) {}
 }
+/**
+ * @package soap
+ */
 class SoapVar {
 	public function SoapVar($data, $encoding, $type_name="", $type_namespace="", $node_name="", $node_namespace="") {}
 }
+/**
+ * @package soap
+ */
 class SoapServer {
 	public function SoapServer($wsdl, $options="") {}
 	public function setPersistence($mode) {}
@@ -108,25 +121,22 @@ class SoapServer {
 	public function fault($code, $string, $actor="", $details="", $name="") {}
 	public function addSoapHeader($object) {}
 }
-class SoapFault {
-	protected $message;
-	protected $code;
-	protected $file;
-	protected $line;
+/**
+ * @package soap
+ */
+class SoapFault extends Exception {
 	public function SoapFault($faultcode, $faultstring, $faultactor="", $detail="", $faultname="", $headerfault="") {}
 	public function __toString() {}
-	public function __construct($message="", $code="", $previous="") {}
-	public function getMessage() {}
-	public function getCode() {}
-	public function getFile() {}
-	public function getLine() {}
-	public function getTrace() {}
-	public function getPrevious() {}
-	public function getTraceAsString() {}
 }
+/**
+ * @package soap
+ */
 class SoapParam {
 	public function SoapParam($data, $name) {}
 }
+/**
+ * @package soap
+ */
 class SoapHeader {
 	public function SoapHeader($namespace, $name, $data="", $mustunderstand="", $actor="") {}
 }
