@@ -16,16 +16,16 @@ to avoid *"undefined class" or "undefined method"* errors in the IDE (e.g. [PhpS
 ##With C source files##
 some hints if you use the --sourceDir parameter
 
-* if you installed the extension from e.g. PECL (with out source) you should download the source code
+* if you installed the extension from e.g. PECL (without source) you should download the source code
 * the information is extracted from (optional) code-comments in the source files
-* some *extension does not include* the (for the compiling optional but for the DocThor) required information
-* if your are lucky and the Docthor extracts more information, then you have a big chance they are not consitent with the "reflected" Structure (because the developer has to update the internal doc comments on code change .. and you know ..)
-* **so trust the structure but don't trust the docBlocks**
-* use a tool like PhpStorm to mark the inconsitencies an fix manualy
+* some **extension does not include** the (for the compiling optional but for the DocThor) required information
+* if your are lucky and the Docthor extracts more information, then you have a big chance they are not consitent with the "reflected" structure (because the developer has to update the internal doc comments on code change .. and you know ..)
+* so **trust the structure** but **don't trust the docBlocks**
+* use a tool like PhpStorm that marks the inconsistencies an fix manualy
 
 ##How it works##
 * primary: uses reflections to determine classes, methods, constants, functions, etc. and "rebuilds" these as empty structures
-* secondary: if you provide a (php-extension-c-files) sourceDirectory then the DocThor will use his stethoscop to extract more information from the source-files to enhance the structure-files with docBlocks
+* secondary: if you provide a (php-extension-c-files) sourceDirectory then the DocThor will use his stethoscope to extract more information from the source-files to enhance the structure-files with docBlocks
 
 ##Test##
 simple test script included in test directory, run with `php DocThorTest.php` 
@@ -38,7 +38,7 @@ will generate php-source code for the [ZMQ-Extension](http://www.zeromq.org) (if
 * `wget https://raw.github.com/SegFaulty/DocThor/master/Stethoscope.php` and his stethoscope
 * `wget https://github.com/mkoppanen/php-zmq/tarball/master -O php-zmq.tar.gz` download ZMQ-Sources
 * `tar -xzf php-zmq.tar.gz` and untar
-* `php DocThor.php --sourceDir=./ zmq > zmqApi.php` ask the DocThor
+* `php DocThor.php --sourceDir=./ zmq > zmqApi.php` ask the DocThor and get the receipt
 * put zmqApi.php in your IDE-project-path (and correct the inconsistencies)
  
 zmqApi.php looks like:
