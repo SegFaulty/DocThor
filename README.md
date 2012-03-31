@@ -15,6 +15,7 @@ to avoid *"undefined class" or "undefined method"* errors in the IDE (e.g. [PhpS
 
 ##With C source files##
 some hints if you use the --sourceDir parameter
+
 * if you installed the extension from e.g. PECL (with out source) you should download the source code
 * the information is extracted from (optional) code-comments in the source files
 * some *extension does not include* the (for the compiling optional but for the DocThor) required information
@@ -32,10 +33,11 @@ simple test script included in test directory, run with `php DocThorTest.php`
 ##Example##
 will generate php-source code for the [ZMQ-Extension](http://www.zeromq.org) (if installed)
 
-* `mkdir zmq && cd zmq' make an tmp dir
+* `mkdir zmq && cd zmq` make an tmp dir
 * `wget https://raw.github.com/SegFaulty/DocThor/master/DocThor.php` download DocThor
 * `wget https://raw.github.com/SegFaulty/DocThor/master/Stethoscope.php` and his stethoscope
-* `wget https://github.com/mkoppanen/php-zmq/tarball/master -O php-zmq.tar.gz && tar -xzf php-zmq.tar.gz` download and untar ZMQ-Sources
+* `wget https://github.com/mkoppanen/php-zmq/tarball/master -O php-zmq.tar.gz` download ZMQ-Sources
+* `tar -xzf php-zmq.tar.gz` and untar
 * `php DocThor.php --sourceDir=./ zmq > zmqApi.php` ask the DocThor
 * put zmqApi.php in your IDE-project-path (and correct the inconsistencies)
  
