@@ -8,6 +8,8 @@ to avoid *"undefined class" or "undefined method"* errors in the IDE (e.g. [PhpS
 
 ![undefined](https://raw.github.com/SegFaulty/DocThor/master/undefined.png)
 
+Hint: under https://github.com/schmittjoh/php-stubs you can find a project with pre-generated stub for many extensions
+
 ##Usage##
 * with one parameter it will check if it is a loaded extension, if not it considers it a class name `php DocThor.php APC`
 * with more than one parameter, all are considered class names `php DocThor.php Directory Exception`
