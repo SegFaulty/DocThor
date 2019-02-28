@@ -3,7 +3,7 @@
 
 is a php-script which generates php-source code-stubs for given extensions or class names
 
-we use it at [Schottenland.de](http://www.schottenland.de) to generate simple API-Files for all installed extensions
+we use it at [Schottenland.de](https://www.schottenland.de) to generate simple API-Files for all installed extensions
 to avoid *"undefined class" or "undefined method"* errors in the IDE (e.g. [PhpStorm](http://www.jetbrains.com/phpstorm/))
 
 ![undefined](https://raw.github.com/SegFaulty/DocThor/master/undefined.png)
